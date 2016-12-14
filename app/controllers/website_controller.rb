@@ -10,7 +10,6 @@ class WebsiteController < ApplicationController
       amount = params[:amount].blank? || params[:amount].to_f <= 20.00
       unless amount || !charity
         value = (params[:amount].to_f * 100).to_i
-        p value
         if Rails.env.test?
           charge = OpenStruct.new({
               amount: value,
@@ -25,7 +24,6 @@ class WebsiteController < ApplicationController
            })
         end
         if charge.paid
-          p charge.amount
           charity.credit_amount(charge.amount)
           flash.notice = t(".success")
           redirect_to root_path
