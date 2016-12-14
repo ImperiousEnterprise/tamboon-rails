@@ -7,22 +7,25 @@ class WebsiteController < ApplicationController
     charity = params[:charity].to_s.downcase == "random" ? Charity.order("RANDOM()").first :
         Charity.find_by(id: params[:charity])
     if params[:omise_token].present?
-      amount = params[:amount].blank? || params[:amount].to_i <= 20
+      amount = params[:amount].blank? || params[:amount].to_f <= 20.00
       unless amount || !charity
+        value = (params[:amount].to_f * 100).to_i
+        p value
         if Rails.env.test?
           charge = OpenStruct.new({
-              amount: params[:amount].to_i * 100,
+              amount: value,
               paid: (params[:amount].to_i != 999),
           })
         else
           charge = Omise::Charge.create({
-             amount: params[:amount].to_i * 100,
+             amount: value,
              currency: "THB",
              card: params[:omise_token],
              description: "Donation to #{charity.name} [#{charity.id}]",
            })
         end
         if charge.paid
+          p charge.amount
           charity.credit_amount(charge.amount)
           flash.notice = t(".success")
           redirect_to root_path

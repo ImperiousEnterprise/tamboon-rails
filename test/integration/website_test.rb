@@ -71,4 +71,17 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     assert_equal expected_total, charities.to_a.map(&:reload).sum(&:total)
     assert_equal t("website.donate.success"), flash[:notice]
   end
+
+  test "that subunits up to hundredth(0.01) place can be entered" do
+    charity = charities(:children)
+    initial_total = charity.total
+    expected_total = initial_total + (50.01 * 100)
+
+    post donate_path, amount: "50.01", omise_token: "tokn_X", charity: charity.id
+
+    assert_redirected_to root_path
+    assert_equal t("website.donate.success"), flash[:notice]
+    assert_equal expected_total, charity.reload.total
+  end
+
 end
