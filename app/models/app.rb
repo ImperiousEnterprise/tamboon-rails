@@ -21,4 +21,10 @@ class App
   def find_charity(id)
     Charity.find_by(id: id)
   end
+
+  def create_user(attributes = {})
+    user = User.new(attributes)
+    user.save
+    user
+  end
 end

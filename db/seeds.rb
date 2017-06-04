@@ -7,3 +7,13 @@ charities.each do |_,c|
     app.create_charity(name: c["name"])
   end
 end
+
+users = YAML.load_file(Rails.root.join("test", "fixtures", "users.yml").to_s)
+
+users.each do |_,c|
+  app.create_user(c)
+
+
+end
+
+
